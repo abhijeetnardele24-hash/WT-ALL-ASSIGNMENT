@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VIT Student Semester Result Portal">
+    <title>VIT Student Result Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">VIT<span>RESULTS</span></div>
+            <p>Semester Examination Result Portal</p>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                <span class="icon">🌓</span>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Form Section -->
+            <section class="form-section glass-panel">
+                <h2>Enter Student Details</h2>
+                <form id="resultForm">
+                    <div class="input-group">
+                        <div class="form-control">
+                            <label for="studentName">Student Name</label>
+                            <input type="text" id="studentName" placeholder="E.g., John Doe" required>
+                        </div>
+                        <div class="form-control">
+                            <label for="rollNumber">Roll Number</label>
+                            <input type="text" id="rollNumber" placeholder="E.g., VIT001" required>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Subject Marks</h3>
+                    <div class="subjects-grid">
+                        <!-- Subject 1 -->
+                        <div class="subject-card">
+                            <h4>Subject 1 (Mathematics)</h4>
+                            <div class="marks-input">
+                                <div class="form-control">
+                                    <label>MSE (30)</label>
+                                    <input type="number" id="sub1Mse" min="0" max="30" required>
+                                </div>
+                                <div class="form-control">
+                                    <label>ESE (70)</label>
+                                    <input type="number" id="sub1Ese" min="0" max="70" required>
+                                </div>
+                            </div>
+                            <div class="live-total">Total: <span id="sub1TotalView">0</span> / 100</div>
+                        </div>
+
+                        <!-- Subject 2 -->
+                        <div class="subject-card">
+                            <h4>Subject 2 (Physics)</h4>
+                            <div class="marks-input">
+                                <div class="form-control">
+                                    <label>MSE (30)</label>
+                                    <input type="number" id="sub2Mse" min="0" max="30" required>
+                                </div>
+                                <div class="form-control">
+                                    <label>ESE (70)</label>
+                                    <input type="number" id="sub2Ese" min="0" max="70" required>
+                                </div>
+                            </div>
+                            <div class="live-total">Total: <span id="sub2TotalView">0</span> / 100</div>
+                        </div>
+
+                        <!-- Subject 3 -->
+                        <div class="subject-card">
+                            <h4>Subject 3 (Chemistry)</h4>
+                            <div class="marks-input">
+                                <div class="form-control">
+                                    <label>MSE (30)</label>
+                                    <input type="number" id="sub3Mse" min="0" max="30" required>
+                                </div>
+                                <div class="form-control">
+                                    <label>ESE (70)</label>
+                                    <input type="number" id="sub3Ese" min="0" max="70" required>
+                                </div>
+                            </div>
+                            <div class="live-total">Total: <span id="sub3TotalView">0</span> / 100</div>
+                        </div>
+
+                        <!-- Subject 4 -->
+                        <div class="subject-card">
+                            <h4>Subject 4 (Computer Science)</h4>
+                            <div class="marks-input">
+                                <div class="form-control">
+                                    <label>MSE (30)</label>
+                                    <input type="number" id="sub4Mse" min="0" max="30" required>
+                                </div>
+                                <div class="form-control">
+                                    <label>ESE (70)</label>
+                                    <input type="number" id="sub4Ese" min="0" max="70" required>
+                                </div>
+                            </div>
+                            <div class="live-total">Total: <span id="sub4TotalView">0</span> / 100</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span>Calculate & Save Result</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Results Data Table -->
+            <section class="results-section glass-panel">
+                <div class="table-header">
+                    <h2>Student Records</h2>
+                    <button class="btn-secondary" id="refreshBtn">↻ Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Sub 1</th>
+                                <th>Sub 2</th>
+                                <th>Sub 3</th>
+                                <th>Sub 4</th>
+                                <th>Total</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                            <!-- Data injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="loader" class="loader hidden"></div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>developed by Abhijeet nardele</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Record added successfully!</div>
+
+    <script src="app.js"></script>
+</body>
+</html>
