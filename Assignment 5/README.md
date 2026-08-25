@@ -9,6 +9,9 @@ The final result calculation strictly adheres to the following university weight
 - **MSE Marks (Mid Semester Examination):** Accounts for 30% of the total subject grade.
 - **ESE Marks (End Semester Examination):** Accounts for 70% of the total subject grade.
 
+### Application Screenshot
+![Result Portal Screenshot](screenshot.png)
+
 ## Architecture Diagram
 
 The application follows a standard three-tier Spring Boot MVC architecture to ensure separation of concerns, scalability, and maintainability.
