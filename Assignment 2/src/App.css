@@ -1,0 +1,1354 @@
+/* ============================================================
+   GLOBAL RESET & CSS VARIABLES
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Dark Theme (Razorpay inspired deep blue dark mode) */
+  --bg-primary:       #02042b;
+  --bg-secondary:     #0b0d35;
+  --bg-card:          #11133a;
+  --bg-card-hover:    #161845;
+  --border:           rgba(255, 255, 255, 0.08);
+  --border-accent:    #2b84ea;
+  --text-primary:     #ffffff;
+  --text-secondary:   #9ca3af;
+  --text-muted:       #6b7280;
+  --accent-1:         #2b84ea;
+  --accent-2:         #1c6bd2;
+  --accent-3:         #38bdf8;
+  --accent-alarm:     #f59e0b;
+  --accent-success:   #10b981;
+  --accent-danger:    #ef4444;
+  --glow:             rgba(43, 132, 234, 0.3);
+  --glow-cyan:        rgba(56, 189, 248, 0.3);
+  --shadow:           0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-card:      0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+
+  /* Light Theme (Razorpay clean modern light mode) */
+  --light-bg-primary:     #f4f8fb;
+  --light-bg-secondary:   #eef2f6;
+  --light-bg-card:        #ffffff;
+  --light-bg-card-hover:  #ffffff;
+  --light-border:         #e2e8f0;
+  --light-border-accent:  #2b84ea;
+  --light-text-primary:   #0f172a;
+  --light-text-secondary: #475569;
+  --light-text-muted:     #94a3b8;
+  --light-shadow:         0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --light-shadow-card:    0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================
+   BASE & BODY
+   ============================================================ */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.light-mode {
+  background: var(--light-bg-primary);
+  color: var(--light-text-primary);
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.light-mode ::-webkit-scrollbar-thumb { background: var(--light-border); }
+
+/* ============================================================
+   UTILITY CLASSES (Razorpay clean card style instead of glass)
+   ============================================================ */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light-mode .glass {
+  background: var(--light-bg-card);
+  border-color: var(--light-border);
+  box-shadow: var(--light-shadow-card);
+}
+
+.glass:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.light-mode .glass:hover {
+  background: var(--light-bg-card-hover);
+  border-color: var(--light-border-accent);
+  box-shadow: var(--light-shadow);
+}
+
+/* ============================================================
+   APP WRAPPER
+   ============================================================ */
+.app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  transition: background 0.3s ease;
+  position: relative;
+}
+
+.light-mode .app {
+  background: var(--light-bg-primary);
+}
+
+/* Remove orbs for a cleaner look */
+.app::before, .app::after {
+  display: none;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.app-header {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 60px 24px 40px;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(43, 132, 234, 0.1);
+  border: 1px solid rgba(43, 132, 234, 0.2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent-1);
+  margin-bottom: 20px;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-success);
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.app-header h1 {
+  font-family: inherit;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.light-mode .app-header h1 {
+  color: var(--light-text-primary);
+}
+
+.app-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  letter-spacing: -0.2px;
+  font-weight: 400;
+}
+
+.light-mode .app-header p {
+  color: var(--light-text-secondary);
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.main-content {
+  position: relative;
+  z-index: 5;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+  display: grid;
+  gap: 32px;
+}
+
+.clocks-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.full-row {
+  width: 100%;
+}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.section-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.section-icon.purple { background: rgba(43, 132, 234, 0.1); color: var(--accent-1); }
+.section-icon.cyan   { background: rgba(56, 189, 248, 0.1); color: var(--accent-3); }
+.section-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--accent-alarm); }
+.section-icon.green  { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+
+.section-header h2 {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+}
+
+.light-mode .section-header h2 {
+  color: var(--light-text-primary);
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.light-mode .section-line {
+  background: var(--light-border);
+}
+
+/* ============================================================
+   DIGITAL CLOCK COMPONENT
+   ============================================================ */
+.digital-clock-card {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+}
+
+.digital-time {
+  font-family: inherit;
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.light-mode .digital-time {
+  color: var(--light-text-primary);
+}
+
+.digital-period {
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent-1);
+  margin-left: 8px;
+}
+
+.digital-date {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+.light-mode .digital-date {
+  color: var(--light-text-secondary);
+}
+
+.digital-day {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-1);
+  margin-top: 12px;
+}
+
+.time-segments {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.time-seg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.time-seg-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.light-mode .time-seg-label {
+  color: var(--light-text-muted);
+}
+
+.time-colon {
+  font-family: inherit;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--text-muted);
+  animation: colonBlink 1s ease-in-out infinite;
+  transform: translateY(-8px);
+}
+
+@keyframes colonBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.format-toggle {
+  margin-top: 32px;
+  display: flex;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.light-mode .format-toggle {
+  background: var(--light-bg-secondary);
+}
+
+.format-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.light-mode .format-btn {
+  color: var(--light-text-secondary);
+}
+
+.format-btn.active {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.light-mode .format-btn.active {
+  background: #ffffff;
+  color: var(--light-text-primary);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* ============================================================
+   ANALOG CLOCK COMPONENT
+   ============================================================ */
+.analog-clock-card {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}
+
+.clock-face-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.clock-outer-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: var(--border);
+  padding: 2px;
+}
+
+.light-mode .clock-outer-ring {
+  background: var(--light-border);
+}
+
+.clock-outer-ring::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+}
+
+.light-mode .clock-outer-ring::before {
+  background: var(--light-bg-primary);
+}
+
+.clock-face {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-mode .clock-face {
+  background: #ffffff;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Hour markers */
+.hour-marker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+}
+
+.hour-marker::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.light-mode .hour-marker::before {
+  background: var(--light-border);
+}
+
+.hour-marker.major::before {
+  width: 3px;
+  height: 12px;
+  background: var(--text-secondary);
+}
+
+.light-mode .hour-marker.major::before {
+  background: var(--light-text-secondary);
+}
+
+/* Minute dots */
+.minute-dot {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+}
+
+.minute-dot::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 1px;
+}
+
+.light-mode .minute-dot::before {
+  background: var(--light-border);
+}
+
+/* Clock Hands */
+.hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  border-radius: 4px;
+  transition: transform 0.05s cubic-bezier(0.4, 2.08, 0.55, 0.44);
+}
+
+.hand-hour {
+  width: 4px;
+  height: 55px;
+  background: var(--text-primary);
+  margin-left: -2px;
+  border-radius: 4px;
+}
+
+.light-mode .hand-hour {
+  background: var(--light-text-primary);
+}
+
+.hand-minute {
+  width: 3px;
+  height: 75px;
+  background: var(--text-secondary);
+  margin-left: -1.5px;
+  border-radius: 4px;
+}
+
+.light-mode .hand-minute {
+  background: var(--light-text-secondary);
+}
+
+.hand-second {
+  width: 2px;
+  height: 85px;
+  background: var(--accent-1);
+  margin-left: -1px;
+  border-radius: 4px;
+  transition: transform 0.05s linear;
+}
+
+.clock-center {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  border: 2px solid var(--bg-card);
+  z-index: 10;
+}
+
+.light-mode .clock-center {
+  border-color: #ffffff;
+}
+
+.clock-label {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.clock-label-main {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.light-mode .clock-label-main {
+  color: var(--light-text-secondary);
+}
+
+/* ============================================================
+   WORLD CLOCK COMPONENT
+   ============================================================ */
+.world-clock-card {
+  padding: 32px;
+}
+
+.world-clock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.timezone-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-mode .timezone-card {
+  background: #ffffff;
+  border-color: var(--light-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.timezone-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-accent);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.timezone-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-1);
+  opacity: 0.5;
+}
+
+.timezone-card:hover::before {
+  opacity: 1;
+}
+
+.tz-flag {
+  font-size: 24px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.tz-country {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.light-mode .tz-country {
+  color: var(--light-text-secondary);
+}
+
+.tz-city {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.light-mode .tz-city {
+  color: var(--light-text-primary);
+}
+
+.tz-time {
+  font-family: inherit;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-top: auto;
+}
+
+.light-mode .tz-time {
+  color: var(--light-text-primary);
+}
+
+.tz-date {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.light-mode .tz-date {
+  color: var(--light-text-secondary);
+}
+
+.tz-offset-badge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.light-mode .tz-offset-badge {
+  background: var(--light-bg-secondary);
+  color: var(--light-text-secondary);
+  border-color: var(--light-border);
+}
+
+/* Day/Night indicator */
+.day-night {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.light-mode .day-night {
+  color: var(--light-text-secondary);
+}
+
+/* ============================================================
+   ALARM COMPONENT
+   ============================================================ */
+.alarm-card {
+  padding: 32px;
+}
+
+.alarm-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+}
+
+.alarm-set-panel {
+  background: transparent;
+}
+
+.alarm-title {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.light-mode .alarm-title {
+  color: var(--light-text-primary);
+}
+
+.alarm-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.alarm-colon {
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.alarm-input {
+  width: 70px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s ease;
+  -moz-appearance: textfield;
+}
+
+.alarm-input::-webkit-outer-spin-button,
+.alarm-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.light-mode .alarm-input {
+  background: #ffffff;
+  border-color: var(--light-border);
+  color: var(--light-text-primary);
+}
+
+.alarm-input:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 2px rgba(43, 132, 234, 0.2);
+}
+
+.alarm-input::placeholder {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.alarm-label-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.light-mode .alarm-label-input {
+  background: #ffffff;
+  border-color: var(--light-border);
+  color: var(--light-text-primary);
+}
+
+.alarm-label-input:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 2px rgba(43, 132, 234, 0.2);
+}
+
+.alarm-label-input::placeholder {
+  color: var(--text-muted);
+}
+
+.alarm-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alarm-btn.set {
+  background: var(--accent-1);
+  color: white;
+}
+
+.alarm-btn.set:hover {
+  background: var(--accent-2);
+}
+
+.alarm-btn.clear {
+  background: transparent;
+  color: var(--accent-danger);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+}
+
+.light-mode .alarm-btn.clear {
+  border-color: var(--light-border);
+}
+
+.alarm-btn.clear:hover {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: var(--accent-danger);
+}
+
+/* Alarm List Panel */
+.alarm-list-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 360px;
+  padding-right: 8px;
+}
+
+.alarm-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.light-mode .alarm-item {
+  background: #ffffff;
+  border-color: var(--light-border);
+}
+
+.alarm-item.active {
+  border-left: 4px solid var(--accent-1);
+}
+
+.alarm-item.ringing {
+  border-color: var(--accent-danger);
+  border-left: 4px solid var(--accent-danger);
+  animation: ringPulse 2s infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+}
+
+.alarm-item-time {
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.light-mode .alarm-item-time {
+  color: var(--light-text-primary);
+}
+
+.alarm-item-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.light-mode .alarm-item-label {
+  color: var(--light-text-secondary);
+}
+
+.alarm-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.alarm-toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.light-mode .alarm-toggle {
+  background: var(--light-border);
+}
+
+.alarm-toggle.on {
+  background: var(--accent-success);
+}
+
+.alarm-toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.alarm-toggle.on::after {
+  transform: translateX(18px);
+}
+
+.alarm-delete {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.alarm-delete:hover {
+  color: var(--accent-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.no-alarms {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+.light-mode .no-alarms {
+  background: var(--light-bg-secondary);
+  border-color: var(--light-border);
+  color: var(--light-text-muted);
+}
+
+.no-alarms-icon { font-size: 2rem; margin-bottom: 12px; }
+
+/* Alarm ringing overlay */
+.alarm-ringing-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 4, 43, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: overlayIn 0.3s ease;
+}
+
+.light-mode .alarm-ringing-overlay {
+  background: rgba(244, 248, 251, 0.8);
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.alarm-ringing-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  max-width: 360px;
+  width: 90%;
+}
+
+.light-mode .alarm-ringing-modal {
+  background: #ffffff;
+  border-color: var(--light-border);
+}
+
+.alarm-ringing-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+
+.alarm-ringing-time {
+  font-family: inherit;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.light-mode .alarm-ringing-time {
+  color: var(--light-text-primary);
+}
+
+.alarm-ringing-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.light-mode .alarm-ringing-label {
+  color: var(--light-text-secondary);
+}
+
+.alarm-dismiss-btn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-1);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.alarm-dismiss-btn:hover {
+  background: var(--accent-2);
+}
+
+/* ============================================================
+   THEME TOGGLE COMPONENT
+   ============================================================ */
+.theme-toggle-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+.theme-toggle-btn {
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.theme-toggle-btn.light {
+  background: #ffffff;
+  border-color: var(--light-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.theme-toggle-btn.light .theme-toggle-thumb {
+  transform: translateX(28px);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.app-footer {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 5;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+
+.light-mode .app-footer {
+  color: var(--light-text-muted);
+  border-color: var(--light-border);
+}
+
+/* ============================================================
+   STOPWATCH SECTION
+   ============================================================ */
+.stopwatch-card {
+  padding: 32px;
+}
+
+.stopwatch-display {
+  font-family: inherit;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  margin-bottom: 32px;
+}
+
+.light-mode .stopwatch-display {
+  color: var(--light-text-primary);
+}
+
+.stopwatch-ms {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.light-mode .stopwatch-ms {
+  color: var(--light-text-secondary);
+}
+
+.stopwatch-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.sw-btn {
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.sw-btn.start {
+  background: var(--accent-1);
+  color: white;
+}
+
+.sw-btn.start:hover { background: var(--accent-2); }
+
+.sw-btn.pause {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.light-mode .sw-btn.pause {
+  background: #ffffff;
+  color: var(--light-text-primary);
+  border-color: var(--light-border);
+}
+
+.sw-btn.stop {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.sw-btn.stop:hover {
+  background: var(--bg-secondary);
+}
+.light-mode .sw-btn.stop:hover {
+  background: var(--light-bg-secondary);
+}
+
+.sw-btn.lap {
+  background: transparent;
+  color: var(--accent-1);
+  border-color: var(--border);
+}
+
+.light-mode .sw-btn.lap {
+  border-color: var(--light-border);
+}
+
+.sw-btn.lap:hover {
+  border-color: var(--accent-1);
+}
+
+.lap-list {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.lap-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.light-mode .lap-item {
+  background: #ffffff;
+  border-color: var(--light-border);
+}
+
+.lap-num {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.light-mode .lap-num {
+  color: var(--light-text-muted);
+}
+
+.lap-time {
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.light-mode .lap-time {
+  color: var(--light-text-primary);
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN
+   ============================================================ */
+@media (max-width: 1024px) {
+  .world-clock-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .alarm-layout {
+    grid-template-columns: 1fr;
+  }
+  .alarm-list-panel {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .clocks-row {
+    grid-template-columns: 1fr;
+  }
+  .world-clock-grid {
+    grid-template-columns: 1fr;
+  }
+  .main-content {
+    padding: 0 16px 40px;
+    gap: 24px;
+  }
+  .app-header {
+    padding: 40px 16px 30px;
+  }
+}
+
+/* ============================================================
+   ANIMATIONS & TRANSITIONS
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.glass { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+.main-content > *:nth-child(1) { animation-delay: 0.05s; }
+.main-content > *:nth-child(2) { animation-delay: 0.1s; }
+.main-content > *:nth-child(3) { animation-delay: 0.15s; }
+.main-content > *:nth-child(4) { animation-delay: 0.2s; }
