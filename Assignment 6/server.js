@@ -39,6 +39,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Error/Flash message middleware via query params
+app.use((req, res, next) => {
+    res.locals.error = req.query.error || null;
+    res.locals.success = req.query.success || null;
+    next();
+});
+
 // Routes
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/catalogue', require('./routes/bookRoutes'));
@@ -47,6 +54,17 @@ const bookController = require('./controllers/bookController');
 
 // Default Route
 app.get('/', bookController.getHomeBooks);
+
+// 404 handler
+app.use((req, res, next) => {
+    res.status(404).render('home', { error: 'Page not found' });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('home', { error: 'Something went wrong on the server!' });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

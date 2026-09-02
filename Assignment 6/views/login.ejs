@@ -7,6 +7,13 @@
             <p>Login to your BookHaven account</p>
         </div>
         
+        <% if (error) { %>
+            <div class="alert alert-danger" style="background-color: #FEE2E2; color: #DC2626; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;"><%= error %></div>
+        <% } %>
+        <% if (success) { %>
+            <div class="alert alert-success" style="background-color: #D1FAE5; color: #059669; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;"><%= success %></div>
+        <% } %>
+        
         <form action="/auth/login" method="POST" class="auth-form" id="loginForm">
             <div class="form-group">
                 <label for="email">Email Address</label>

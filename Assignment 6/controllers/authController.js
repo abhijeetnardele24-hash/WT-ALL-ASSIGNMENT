@@ -10,8 +10,7 @@ exports.register = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
-            // we will use flash messages later in step 11, for now just basic error
-            return res.status(400).send('User already exists');
+            return res.redirect('/auth/register?error=User+already+exists');
         }
         
         // Hash password
@@ -25,10 +24,10 @@ exports.register = async (req, res) => {
         });
         
         await user.save();
-        res.redirect('/auth/login');
+        res.redirect('/auth/login?success=Registration+successful.+Please+log+in.');
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.redirect('/auth/register?error=Server+error');
     }
 };
 
@@ -39,12 +38,12 @@ exports.login = async (req, res) => {
         
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).send('Invalid Credentials');
+            return res.redirect('/auth/login?error=Invalid+Credentials');
         }
         
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).send('Invalid Credentials');
+            return res.redirect('/auth/login?error=Invalid+Credentials');
         }
         
         // Create JWT
@@ -63,7 +62,7 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.redirect('/auth/login?error=Server+error');
     }
 };
 
