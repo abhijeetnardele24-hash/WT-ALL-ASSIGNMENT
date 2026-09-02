@@ -41,11 +41,12 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/auth', require('./routes/authRoutes'));
+app.use('/catalogue', require('./routes/bookRoutes'));
+
+const bookController = require('./controllers/bookController');
 
 // Default Route
-app.get('/', (req, res) => {
-    res.render('home');
-});
+app.get('/', bookController.getHomeBooks);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
