@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookHaven | Online Book Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">BookHaven</a>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="/catalogue" class="nav-link">Catalogue</a></li>
+                <% if (user) { %>
+                    <li class="nav-item"><a href="#" class="nav-link">Hello, <%= user.name %></a></li>
+                    <li class="nav-item"><a href="/auth/logout" class="nav-link btn-secondary">Logout</a></li>
+                <% } else { %>
+                    <li class="nav-item"><a href="/auth/login" class="nav-link">Login</a></li>
+                    <li class="nav-item"><a href="/auth/register" class="nav-link btn-primary">Register</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>
+    <main>

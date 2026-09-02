@@ -1,0 +1,32 @@
+<%- include('partials/navbar') %>
+
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Login to your BookHaven account</p>
+        </div>
+        
+        <form action="/auth/login" method="POST" class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="you@example.com">
+                <small class="error-msg" id="emailError"></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required placeholder="Enter your password">
+                <small class="error-msg" id="passwordError"></small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block btn-large submit-btn">Login</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/auth/register">Register here</a></p>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

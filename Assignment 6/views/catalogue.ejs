@@ -1,0 +1,75 @@
+<%- include('partials/navbar') %>
+
+<section class="catalogue-header">
+    <div class="container">
+        <h2>Book Catalogue</h2>
+        <div class="filters-container">
+            <form action="/catalogue" method="GET" class="search-form" id="searchForm">
+                <input type="text" name="search" id="searchInput" placeholder="Search by title or author..." value="<%= searchQuery %>" class="form-control search-input">
+                
+                <select name="genre" id="genreFilter" class="form-control genre-select" onchange="this.form.submit()">
+                    <option value="All" <%= selectedGenre === 'All' ? 'selected' : '' %>>All Genres</option>
+                    <% if (genres && genres.length > 0) { %>
+                        <% genres.forEach(genre => { %>
+                            <option value="<%= genre %>" <%= selectedGenre === genre ? 'selected' : '' %>><%= genre %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+                
+                <button type="submit" class="btn btn-primary search-btn">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="catalogue-section">
+    <div class="container">
+        <div class="book-grid">
+            <% if (books && books.length > 0) { %>
+                <% books.forEach(book => { %>
+                    <div class="book-card">
+                        <div class="book-cover-wrapper">
+                            <img src="<%= book.coverImage %>" alt="<%= book.title %> cover" class="book-cover" loading="lazy">
+                        </div>
+                        <div class="book-info">
+                            <h3 class="book-title"><%= book.title %></h3>
+                            <p class="book-author"><%= book.author %></p>
+                            <div class="book-meta">
+                                <span class="book-genre"><%= book.genre %></span>
+                                <span class="book-price">$<%= book.price.toFixed(2) %></span>
+                            </div>
+                            <div class="book-actions">
+                                <% if (user) { %>
+                                    <button class="btn btn-primary btn-block" onclick="alert('Added to cart!')">Add to Cart</button>
+                                <% } else { %>
+                                    <a href="/auth/login" class="btn btn-outline btn-block">Login to Buy</a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="empty-state">
+                    <h3>No books found matching your criteria.</h3>
+                    <p>Try adjusting your search or filters.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (totalPages > 1) { %>
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                    <a href="/catalogue?page=<%= currentPage - 1 %>&search=<%= searchQuery %>&genre=<%= selectedGenre %>" class="btn btn-outline">&laquo; Prev</a>
+                <% } %>
+                
+                <span class="page-info">Page <%= currentPage %> of <%= totalPages %></span>
+                
+                <% if (currentPage < totalPages) { %>
+                    <a href="/catalogue?page=<%= currentPage + 1 %>&search=<%= searchQuery %>&genre=<%= selectedGenre %>" class="btn btn-outline">Next &raquo;</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

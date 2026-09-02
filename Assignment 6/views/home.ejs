@@ -1,0 +1,41 @@
+<%- include('partials/navbar') %>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Discover Your Next Great Read</h1>
+        <p>Explore thousands of books across all genres at BookHaven.</p>
+        <a href="/catalogue" class="btn btn-primary btn-large">Browse Catalogue</a>
+    </div>
+</section>
+
+<section class="featured-books">
+    <div class="container">
+        <h2 class="section-title">Featured Books</h2>
+        <div class="book-grid">
+            <% if (featuredBooks && featuredBooks.length > 0) { %>
+                <% featuredBooks.forEach(book => { %>
+                    <div class="book-card">
+                        <div class="book-cover-wrapper">
+                            <img src="<%= book.coverImage %>" alt="<%= book.title %> cover" class="book-cover">
+                        </div>
+                        <div class="book-info">
+                            <h3 class="book-title"><%= book.title %></h3>
+                            <p class="book-author"><%= book.author %></p>
+                            <div class="book-meta">
+                                <span class="book-genre"><%= book.genre %></span>
+                                <span class="book-price">$<%= book.price.toFixed(2) %></span>
+                            </div>
+                            <div class="book-actions">
+                                <a href="/catalogue?search=<%= book.title %>" class="btn btn-outline btn-block">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No featured books available at the moment.</p>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
