@@ -1,8 +1,8 @@
-# 📚 Online Book Store
+# Online Book Store
 
 A full-stack, responsive online bookstore built with **Node.js**, **Express**, and **MongoDB**. This project demonstrates modern web development practices including MVC architecture, secure authentication, server-side rendering, and responsive UI design.
 
-## 🏗️ Architecture Diagram
+## Architecture Diagram
 
 ```mermaid
 graph TD
@@ -33,7 +33,7 @@ graph TD
     EJS -- "HTML Response" --> Client
 ```
 
-## ✨ Core Features
+## Core Features
 - **Public & Protected Routes:** Users can browse the home page and catalogue without an account.
 - **Secure Authentication:** 
   - User registration with `bcrypt` password hashing.
@@ -43,7 +43,7 @@ graph TD
 - **Responsive UI:** Custom CSS implementation ensuring the site looks great on Mobile, Tablet, and Desktop (Grid/Flexbox layouts).
 - **Error Handling:** Centralized error handling and query-parameter-based flash messaging for form validation feedback.
 
-## 💾 Database Schema
+## Database Schema
 
 ### User Model
 | Field | Type | Description |
@@ -64,7 +64,7 @@ graph TD
 | `genre` | String | Category (e.g., Fiction, Sci-Fi, Tech) |
 | `createdAt` | Date | Timestamp when book was added |
 
-## 📁 Folder Structure
+## Folder Structure
 ```
 online-bookstore/
 ├── config/
@@ -98,7 +98,7 @@ online-bookstore/
 └── README.md                 # Project documentation
 ```
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 1. **Clone the repository:**
    ```bash
@@ -135,13 +135,10 @@ online-bookstore/
 7. **Visit the App:**
    Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB, Mongoose
 - **Frontend:** EJS (Server-Side Templating), Vanilla CSS, Vanilla JavaScript
 - **Security:** jsonwebtoken (JWT), bcryptjs
 
-## 👨‍💻 Author
-**[Your Name]**  
-[Course/Subject Name]  
-[College]
+
