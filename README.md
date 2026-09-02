@@ -19,6 +19,7 @@ Each assignment explores different modern web development frameworks and technol
 | **[Assignment 3](./Assignment%203)** | Electricity Bill Calculator (Servlets) | `Java Servlets`, `JSP`, `Tomcat`, `Bootstrap` |
 | **[Assignment 4](./Assignment%204)** | VIT Student Result Portal (Frontend) | `React.js`, `Tailwind CSS`, `JavaScript` |
 | **[Assignment 5](./Assignment%205)** | VIT Student Result Portal (Fullstack) | `Spring Boot (Java)`, `JavaScript`, `MySQL / MongoDB` |
+| **[Assignment 6](./Assignment%206)** | Online Book Store | `Node.js`, `Express.js`, `MongoDB`, `EJS` |
 
 ---
 
@@ -47,6 +48,9 @@ Each assignment explores different modern web development frameworks and technol
 ### [Assignment 5: VIT Student Result Portal (Spring Boot)](./Assignment%205)
 **Description:** A full-stack responsive website to prepare one semester's result for VIT students using **JavaScript**, **Spring Boot**, and **MySQL/MongoDB**. Uses the same 30% MSE / 70% ESE weighting system as Assignment 4.
 
+### [Assignment 6: Online Book Store (Node.js & MongoDB)](./Assignment%206)
+**Description:** A complete, responsive website for an online bookstore using **Node.js**, **Express**, and **MongoDB**. The application includes four main pages: Home Page, Login Page, Registration Page (with secure authentication), and a Catalogue Page with search and filtering capabilities.
+
 ---
 
 ## Getting Started
@@ -58,6 +62,7 @@ To run any of the assignments locally, navigate to the specific assignment folde
 - **Node.js & npm** for React projects (Assignments 2 & 4).
 - **Java JDK 17+ & Tomcat Server** for Assignment 3.
 - **Java JDK & Maven** for Spring Boot (Assignment 5).
+- **Node.js & MongoDB** for the Online Book Store (Assignment 6).
 
 ---
 
