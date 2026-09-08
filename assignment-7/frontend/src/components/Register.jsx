@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function Register() {
   const [name, setName] = useState('');
@@ -17,7 +18,7 @@ function Register() {
         email,
         password
       });
-      setMessage('Registration successful! Redirecting to login...');
+      setMessage('Registration successful! Redirecting...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
       setMessage(error.response?.data || 'Registration failed.');
@@ -25,8 +26,13 @@ function Register() {
   };
 
   return (
-    <div className="form-container">
-      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Create an Account</h2>
+    <motion.div 
+      className="form-container glass-panel"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 style={{ marginBottom: '2rem', textAlign: 'center', fontSize: '2rem' }}>Create Account</h2>
       <form onSubmit={handleRegister}>
         <div className="form-group">
           <label>Full Name</label>
@@ -35,6 +41,7 @@ function Register() {
             value={name} 
             onChange={(e) => setName(e.target.value)} 
             required 
+            placeholder="John Doe"
           />
         </div>
         <div className="form-group">
@@ -44,6 +51,7 @@ function Register() {
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             required 
+            placeholder="john@example.com"
           />
         </div>
         <div className="form-group">
@@ -53,12 +61,21 @@ function Register() {
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
+            placeholder="Create a strong password"
           />
         </div>
-        <button type="submit" className="btn" style={{ width: '100%' }}>Register</button>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          type="submit" 
+          className="btn" 
+          style={{ width: '100%', marginTop: '1rem' }}
+        >
+          Register
+        </motion.button>
       </form>
-      {message && <div className="message">{message}</div>}
-    </div>
+      {message && <motion.div initial={{opacity:0}} animate={{opacity:1}} className="message">{message}</motion.div>}
+    </motion.div>
   );
 }
 

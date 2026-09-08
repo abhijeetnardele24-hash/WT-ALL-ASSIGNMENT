@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -23,8 +24,13 @@ function Login() {
   };
 
   return (
-    <div className="form-container">
-      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Welcome Back</h2>
+    <motion.div 
+      className="form-container glass-panel"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 style={{ marginBottom: '2rem', textAlign: 'center', fontSize: '2rem' }}>Welcome Back</h2>
       <form onSubmit={handleLogin}>
         <div className="form-group">
           <label>Email</label>
@@ -33,6 +39,7 @@ function Login() {
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             required 
+            placeholder="Enter your email"
           />
         </div>
         <div className="form-group">
@@ -42,12 +49,21 @@ function Login() {
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
+            placeholder="Enter your password"
           />
         </div>
-        <button type="submit" className="btn" style={{ width: '100%' }}>Login</button>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          type="submit" 
+          className="btn" 
+          style={{ width: '100%', marginTop: '1rem' }}
+        >
+          Login
+        </motion.button>
       </form>
-      {message && <div className="message">{message}</div>}
-    </div>
+      {message && <motion.div initial={{opacity:0}} animate={{opacity:1}} className="message">{message}</motion.div>}
+    </motion.div>
   );
 }
 
