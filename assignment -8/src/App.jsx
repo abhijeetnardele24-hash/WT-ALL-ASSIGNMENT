@@ -22,15 +22,45 @@ const initialNodes = [
   {
     id: '1',
     type: 'umlClass',
-    position: { x: 250, y: 100 },
+    position: { x: 450, y: 150 },
     data: {
       name: 'Person',
-      attributes: [{ name: 'name', type: 'String', visibility: '-' }, { name: 'age', type: 'int', visibility: '-' }],
-      methods: [{ name: 'getName', returnType: 'String', visibility: '+' }],
+      attributes: [
+        { name: 'name', type: 'String', visibility: '-' }, 
+        { name: 'age', type: 'int', visibility: '-' }
+      ],
+      methods: [
+        { name: 'getName', returnType: 'String', visibility: '+' }
+      ],
     },
   },
+  {
+    id: '2',
+    type: 'umlClass',
+    position: { x: 450, y: 400 },
+    data: {
+      name: 'Student',
+      attributes: [
+        { name: 'studentId', type: 'String', visibility: '-' }
+      ],
+      methods: [
+        { name: 'getStudentId', returnType: 'String', visibility: '+' }
+      ],
+    },
+  }
 ];
-const initialEdges = [];
+
+const initialEdges = [
+  {
+    id: 'e2-1',
+    source: '2',
+    target: '1',
+    type: 'smoothstep',
+    animated: true,
+    style: { stroke: '#8b5cf6', strokeWidth: 2 },
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' },
+  }
+];
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -38,11 +68,15 @@ export default function App() {
   const [selectedNodeId, setSelectedNodeId] = useState(null);
 
   const onConnect = useCallback((params) => {
-    // Add relationship type based on current selection or default to association
-    setEdges((eds) => addEdge({ ...params, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed } }, eds));
+    setEdges((eds) => addEdge({ 
+      ...params, 
+      type: 'smoothstep', 
+      animated: true,
+      style: { stroke: '#8b5cf6', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' } 
+    }, eds));
   }, [setEdges]);
 
-  // Handle node selection
   const onSelectionChange = useCallback(({ nodes }) => {
     if (nodes.length === 1) {
       setSelectedNodeId(nodes[0].id);
@@ -55,7 +89,7 @@ export default function App() {
     const newNode = {
       id: `node-${Date.now()}`,
       type: 'umlClass',
-      position: { x: Math.random() * 200 + 100, y: Math.random() * 200 + 100 },
+      position: { x: Math.random() * 300 + 350, y: Math.random() * 300 + 100 },
       data: {
         name: 'NewClass',
         attributes: [],
@@ -103,11 +137,12 @@ export default function App() {
           onConnect={onConnect}
           onSelectionChange={onSelectionChange}
           nodeTypes={nodeTypes}
+          colorMode="dark"
           fitView
         >
-          <Controls />
-          <MiniMap />
-          <Background variant="dots" gap={12} size={1} />
+          <Controls style={{ backgroundColor: '#1e293b', fill: '#f8fafc' }} />
+          <MiniMap style={{ backgroundColor: '#1e293b' }} nodeColor="#3b82f6" maskColor="rgba(15, 23, 42, 0.7)" />
+          <Background variant="dots" gap={16} size={1} color="#334155" />
         </ReactFlow>
       </div>
     </div>

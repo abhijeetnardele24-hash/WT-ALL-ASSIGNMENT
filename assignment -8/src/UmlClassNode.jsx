@@ -1,5 +1,13 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
+import { Box, Lock, Unlock, Shield } from 'lucide-react';
+
+const getVisibilityIcon = (vis) => {
+  if (vis === '-') return <Lock size={12} className="uml-vis" style={{ color: '#ef4444' }} />;
+  if (vis === '+') return <Unlock size={12} className="uml-vis" style={{ color: '#22c55e' }} />;
+  if (vis === '#') return <Shield size={12} className="uml-vis" style={{ color: '#f59e0b' }} />;
+  return <span className="uml-vis">{vis}</span>;
+};
 
 const UmlClassNode = ({ data, selected }) => {
   return (
@@ -7,14 +15,16 @@ const UmlClassNode = ({ data, selected }) => {
       <Handle type="target" position={Position.Top} />
       
       <div className="uml-header">
-        <strong>{data.name || 'ClassName'}</strong>
+        <Box size={16} />
+        {data.name || 'ClassName'}
       </div>
       
       <div className="uml-section">
         {data.attributes && data.attributes.length > 0 ? (
           data.attributes.map((attr, idx) => (
             <div key={idx} className="uml-item">
-              {attr.visibility || '-'} {attr.name}: {attr.type}
+              {getVisibilityIcon(attr.visibility || '-')} 
+              <span>{attr.name}: <span className="uml-type">{attr.type}</span></span>
             </div>
           ))
         ) : (
@@ -26,7 +36,8 @@ const UmlClassNode = ({ data, selected }) => {
         {data.methods && data.methods.length > 0 ? (
           data.methods.map((method, idx) => (
             <div key={idx} className="uml-item">
-              {method.visibility || '+'} {method.name}(): {method.returnType}
+              {getVisibilityIcon(method.visibility || '+')} 
+              <span>{method.name}(): <span className="uml-type">{method.returnType}</span></span>
             </div>
           ))
         ) : (
