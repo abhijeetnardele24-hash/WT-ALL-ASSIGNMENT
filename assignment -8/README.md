@@ -1,4 +1,4 @@
-# Assignment 7 - Interactive UML Class Diagram Generator using React
+# Assignment 8 - Interactive UML Class Diagram Generator using React
 
 ## Description
 This project is an Interactive UML Class Diagram Generator built using React and `@xyflow/react`. It allows users to dynamically create, manage, and visually represent UML classes and their relationships. 
@@ -18,7 +18,7 @@ This project is an Interactive UML Class Diagram Generator built using React and
 - Vanilla CSS
 
 ## Setup and Run
-1. Clone the repository and navigate to `Assignment 7`.
+1. Clone the repository and navigate to `Assignment 8`.
 2. Run `npm install` to install dependencies.
 3. Run `npm run dev` to start the development server.
 4. Open the provided localhost link in your browser.
