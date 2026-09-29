@@ -491,3 +491,135 @@
 .player-wickets {
   font-weight: 700;
 }
+/* Replace the carousel parts of App9.css */
+
+.cb-carousel-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.cb-carousel-container::-webkit-scrollbar {
+  height: 6px;
+}
+.cb-carousel-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.cb-carousel-card {
+  min-width: 320px;
+  max-width: 320px; /* Force consistent width */
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cb-carousel-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.cb-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cb-card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.cb-card-badge {
+  background: #d32f2f;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.cb-card-teams {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cb-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cb-team-name {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+  margin-left: 10px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.cb-score {
+  font-weight: 700;
+  font-size: 14px;
+  color: #333;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cb-card-status {
+  padding: 0 15px 15px 15px;
+  color: #d32f2f;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-card-footer {
+  background-color: #f8f8f8;
+  text-align: right;
+  padding: 8px 15px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+  border-top: 1px solid #f0f0f0;
+  margin-top: auto;
+}
+
+.cb-card-footer span:hover {
+  text-decoration: underline;
+}
+
+/* Secondary Nav Fixes */
+.cb-matches-quick-links li {
+  padding: 0 15px;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
