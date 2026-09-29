@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, User, ChevronRight, X } from 'lucide-react';
+import { Search, User, X } from 'lucide-react';
 import './App.css';
 
 function App() {
-  const [matches, setMatches] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('LIVE'); // LIVE, UPCOMING, RECENT
+  const [mainMatches, setMainMatches] = useState([]);
+  const [quickLinks, setQuickLinks] = useState([]); // For the dark grey secondary navbar
+  
   const [latestNews, setLatestNews] = useState([]);
   const [featuredNews, setFeaturedNews] = useState(null);
   const [sidebarNews, setSidebarNews] = useState([]);
@@ -14,12 +17,17 @@ function App() {
   const [scorecard, setScorecard] = useState(null);
   const [loadingScorecard, setLoadingScorecard] = useState(false);
 
-  const fetchData = async () => {
+  const fetchMainData = async () => {
     try {
-      // Fetch matches (mixing live/recent for the carousel)
-      const matchesRes = await fetch('http://localhost:8080/api/matches');
-      const matchesData = await matchesRes.json();
-      setMatches(matchesData);
+      setLoading(true);
+      
+      // Fetch main carousel matches based on category
+      const matchesRes = await fetch(`http://localhost:8080/api/matches/${activeCategory.toLowerCase()}`);
+      setMainMatches(await matchesRes.json());
+      
+      // Always fetch all matches for the secondary navbar quick links
+      const allMatchesRes = await fetch('http://localhost:8080/api/matches');
+      setQuickLinks(await allMatchesRes.json());
 
       // Fetch news
       const [latestRes, featuredRes, sidebarRes] = await Promise.all([
@@ -41,7 +49,7 @@ function App() {
   const simulateMatches = async () => {
     try {
       await fetch('http://localhost:8080/api/matches/simulate', { method: 'POST' });
-      fetchData();
+      fetchMainData();
     } catch (error) {
       console.error("Error simulating matches", error);
     }
@@ -63,11 +71,10 @@ function App() {
   };
 
   useEffect(() => {
-    setLoading(true);
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
+    fetchMainData();
+    const interval = setInterval(fetchMainData, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeCategory]);
 
   return (
     <div className="cricbuzz-app">
@@ -79,15 +86,15 @@ function App() {
               cric<span>buzz</span>
             </div>
             <ul className="cb-nav-list">
-              <li><a href="#">Live Scores</a></li>
-              <li><a href="#">Schedule</a></li>
-              <li><a href="#">Archives</a></li>
-              <li><a href="#">News ▾</a></li>
-              <li><a href="#">Series ▾</a></li>
-              <li><a href="#">Teams ▾</a></li>
-              <li><a href="#">Videos ▾</a></li>
-              <li><a href="#">Rankings ▾</a></li>
-              <li><a href="#">More ▾</a></li>
+              <li><button className={activeCategory === 'LIVE' ? 'active-nav' : ''} onClick={() => setActiveCategory('LIVE')}>Live Scores</button></li>
+              <li><button className={activeCategory === 'UPCOMING' ? 'active-nav' : ''} onClick={() => setActiveCategory('UPCOMING')}>Schedule</button></li>
+              <li><button className={activeCategory === 'RECENT' ? 'active-nav' : ''} onClick={() => setActiveCategory('RECENT')}>Archives</button></li>
+              <li><button>News ▾</button></li>
+              <li><button>Series ▾</button></li>
+              <li><button>Teams ▾</button></li>
+              <li><button>Videos ▾</button></li>
+              <li><button>Rankings ▾</button></li>
+              <li><button>More ▾</button></li>
             </ul>
           </div>
           <div className="cb-nav-right">
@@ -103,46 +110,60 @@ function App() {
         <div className="cb-nav-container">
           <div className="matches-label">MATCHES</div>
           <ul className="cb-matches-quick-links">
-            <li>AUSA vs INDA - AUS...</li>
-            <li>INDWA vs AUSWA - S...</li>
-            <li>AUSU19 vs INDU19 - I...</li>
-            <li>IND vs WI - Preview</li>
-            <li>SL vs NEP - Abandon</li>
+            {quickLinks.slice(0, 5).map(match => (
+              <li key={match.id} onClick={() => viewScorecard(match)}>
+                {match.team1} vs {match.team2} - {match.matchStatus === 'LIVE' ? 'LIVE' : (match.summary || match.matchStatus)}
+              </li>
+            ))}
           </ul>
           <div className="all-matches-link">ALL ▾</div>
         </div>
       </div>
 
       <div className="cb-main-content">
+        
+        {/* Dynamic Category Header */}
+        <h2 style={{ fontSize: '20px', marginBottom: '15px', color: '#222' }}>
+          {activeCategory === 'LIVE' ? 'Live Matches' : activeCategory === 'UPCOMING' ? 'Upcoming Schedule' : 'Archived Recent Matches'}
+        </h2>
+
         {/* Horizontal Match Carousel */}
-        <div className="cb-carousel-container">
-          {matches.map(match => (
-            <div className="cb-carousel-card" key={match.id} onClick={() => viewScorecard(match)}>
-              <div className="cb-card-header">
-                <span className="cb-card-title">{match.seriesName} • {match.matchType}</span>
-                <span className="cb-card-badge">{match.matchType === 'T20' ? 'T20' : 'FC'}</span>
-              </div>
-              <div className="cb-card-teams">
-                <div className="cb-team">
-                  <span className="cb-flag">🏏</span>
-                  <span className="cb-team-name">{match.team1}</span>
-                  <span className="cb-score">{match.team1Score}</span>
+        {loading && mainMatches.length === 0 ? (
+          <div style={{ padding: '20px', color: '#666' }}>Fetching {activeCategory.toLowerCase()} data from API...</div>
+        ) : mainMatches.length === 0 ? (
+          <div style={{ padding: '20px', color: '#666', background: 'white', borderRadius: '4px' }}>
+            No {activeCategory.toLowerCase()} matches found. Click the Cricbuzz logo to load test data!
+          </div>
+        ) : (
+          <div className="cb-carousel-container">
+            {mainMatches.map(match => (
+              <div className="cb-carousel-card" key={match.id} onClick={() => viewScorecard(match)}>
+                <div className="cb-card-header">
+                  <span className="cb-card-title">{match.seriesName} • {match.matchType}</span>
+                  <span className="cb-card-badge">{match.matchType === 'T20I' || match.matchType === 'T20' ? 'T20' : 'FC'}</span>
                 </div>
-                <div className="cb-team">
-                  <span className="cb-flag">🏏</span>
-                  <span className="cb-team-name">{match.team2}</span>
-                  <span className="cb-score">{match.team2Score}</span>
+                <div className="cb-card-teams">
+                  <div className="cb-team">
+                    <span className="cb-flag">🏏</span>
+                    <span className="cb-team-name">{match.team1}</span>
+                    <span className="cb-score">{match.team1Score} <span className="cb-overs">{match.team1Overs && `(${match.team1Overs})`}</span></span>
+                  </div>
+                  <div className="cb-team">
+                    <span className="cb-flag">🏏</span>
+                    <span className="cb-team-name">{match.team2}</span>
+                    <span className="cb-score">{match.team2Score} <span className="cb-overs">{match.team2Overs && `(${match.team2Overs})`}</span></span>
+                  </div>
+                </div>
+                <div className="cb-card-status">
+                  {match.summary || "Match in progress"}
+                </div>
+                <div className="cb-card-footer">
+                  <span>SCORECARD</span>
                 </div>
               </div>
-              <div className="cb-card-status">
-                {match.summary || "Match in progress"}
-              </div>
-              <div className="cb-card-footer">
-                <span>SCHEDULE</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Quick Access Bar */}
         <div className="cb-quick-access">
@@ -159,6 +180,7 @@ function App() {
           <div className="cb-col-left">
             <h3 className="cb-section-title">LATEST NEWS</h3>
             <div className="cb-latest-news-list">
+              {latestNews.length === 0 && <p style={{color:'#666'}}>Fetching news...</p>}
               {latestNews.map((news, i) => (
                 <div className="cb-news-item" key={i}>
                   <p>{news.title}</p>
@@ -170,13 +192,15 @@ function App() {
 
           {/* Middle Column: Featured Story */}
           <div className="cb-col-middle">
-            {featuredNews && (
+            {featuredNews ? (
               <div className="cb-featured-story">
                 <h3 className="cb-section-title-sub">{featuredNews.category}</h3>
                 <img src={featuredNews.imageUrl} alt="Featured" />
                 <h1 className="cb-featured-title">{featuredNews.title}</h1>
                 <p className="cb-featured-desc">{featuredNews.description}</p>
               </div>
+            ) : (
+              <p style={{color:'#666'}}>Fetching featured story...</p>
             )}
           </div>
 
@@ -184,6 +208,7 @@ function App() {
           <div className="cb-col-right">
             <h3 className="cb-section-title">FEATURED ARTICLES</h3>
             <div className="cb-sidebar-list">
+              {sidebarNews.length === 0 && <p style={{color:'#666'}}>Fetching articles...</p>}
               {sidebarNews.map((news, i) => (
                 <div className="cb-sidebar-card" key={i}>
                   <img src={news.imageUrl} alt="sidebar news" />
@@ -210,7 +235,7 @@ function App() {
             
             <div className="scorecard-body">
               {loadingScorecard ? (
-                <div className="cb-loading">Loading live scorecard data from API...</div>
+                <div className="cb-loading" style={{padding:'40px', textAlign:'center', color:'#666'}}>Loading live scorecard data from API...</div>
               ) : scorecard && scorecard.batsmen ? (
                 <>
                   <div className="scorecard-section">
@@ -272,7 +297,7 @@ function App() {
                   </div>
                 </>
               ) : (
-                <div className="cb-empty">Scorecard not available for this match.</div>
+                <div className="cb-empty" style={{padding:'40px', textAlign:'center', color:'#666'}}>Detailed scorecard not available for this match.</div>
               )}
             </div>
           </div>

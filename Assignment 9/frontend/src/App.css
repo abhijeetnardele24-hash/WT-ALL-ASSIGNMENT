@@ -1,3 +1,4 @@
+/* Previous CSS content */
 .cricbuzz-app {
   min-height: 100vh;
   background-color: #f2f2f2;
@@ -51,7 +52,9 @@
   height: 100%;
 }
 
-.cb-nav-list a {
+.cb-nav-list button {
+  background: transparent;
+  border: none;
   color: white;
   text-decoration: none;
   font-size: 14px;
@@ -61,10 +64,17 @@
   display: flex;
   align-items: center;
   transition: background-color 0.2s;
+  cursor: pointer;
 }
 
-.cb-nav-list a:hover {
+.cb-nav-list button:hover {
   background-color: #00765a;
+}
+
+.cb-nav-list button.active-nav {
+  background-color: #00765a;
+  border-bottom: 3px solid white;
+  font-weight: 600;
 }
 
 .cb-premium-btn {
@@ -110,10 +120,13 @@
   padding: 0 15px;
   border-right: 1px solid rgba(255,255,255,0.2);
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .cb-matches-quick-links li:hover {
   text-decoration: underline;
+  background-color: rgba(255,255,255,0.05);
 }
 
 .all-matches-link {
