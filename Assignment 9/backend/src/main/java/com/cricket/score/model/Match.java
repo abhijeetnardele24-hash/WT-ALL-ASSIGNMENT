@@ -13,6 +13,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    private String matchId; // CricAPI UUID
     private String seriesName; // e.g. "ICC World Cup 2027"
     private String matchType; // e.g. "T20I", "ODI", "Test"
     
@@ -23,8 +24,15 @@ public class Match {
     private String team1Overs; // e.g. "20.0"
     private String team2Overs; // e.g. "19.2"
     
+    @Column(length = 500)
+    private String team1Logo;
+    @Column(length = 500)
+    private String team2Logo;
+    
     private String matchStatus; // LIVE, RECENT, UPCOMING
     private String venue;
+    
+    @Column(length = 1000)
     private String summary; // e.g. "India won by 5 runs"
     
     private String toss;
