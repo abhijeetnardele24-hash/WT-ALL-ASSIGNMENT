@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -17,7 +19,6 @@ public class MatchController {
     private List<Match> scrapeRssMatches() {
         List<Match> matches = new ArrayList<>();
         try {
-            // Using Cricinfo Live Scores RSS which is robust and not blocked by anti-bot walls
             Document doc = Jsoup.connect("http://static.cricinfo.com/rss/livescores.xml")
                     .userAgent("Mozilla/5.0")
                     .timeout(10000)
@@ -26,30 +27,41 @@ public class MatchController {
             Elements items = doc.select("item");
             long id = 1;
             for (Element item : items) {
-                String title = item.select("title").text(); 
-                // Format: "TeamA 200/5 v TeamB 195/10 *"
+                String title = item.select("title").text().replace("  ", " ").trim(); 
                 
                 Match m = new Match();
                 m.setId(id++);
                 m.setSeriesName("International & Domestic Matches");
                 m.setMatchType("LIVE");
+                m.setMatchStatus("LIVE");
                 
+                // Parse "TeamName Score v TeamName Score" using regex or split
                 if (title.contains(" v ")) {
-                    String[] parts = title.split(" v ");
-                    m.setTeam1(parts[0].trim());
-                    m.setTeam2(parts[1].trim());
+                    String[] teams = title.split(" v ");
+                    
+                    // Parse Team 1
+                    String t1 = teams[0].trim();
+                    m.setTeam1(extractTeamName(t1));
+                    m.setTeam1Score(extractScore(t1));
+                    
+                    // Parse Team 2
+                    String t2 = teams[1].trim();
+                    m.setTeam2(extractTeamName(t2));
+                    m.setTeam2Score(extractScore(t2));
+                    
+                    // Cleanup summary text so it's not just a repeat
+                    String desc = item.select("description").text();
+                    m.setSummary("Match in progress");
                 } else {
                     m.setTeam1(title);
                     m.setTeam2("TBD");
+                    m.setTeam1Score("");
+                    m.setTeam2Score("");
+                    m.setSummary(item.select("description").text());
                 }
                 
-                m.setMatchStatus("LIVE");
-                m.setSummary(item.select("description").text());
-                m.setTeam1Score("Details in Summary");
-                m.setTeam2Score("");
                 matches.add(m);
-                
-                if(matches.size() >= 10) break; // Limit to 10 latest live/recent matches
+                if(matches.size() >= 10) break;
             }
         } catch (Exception e) {
             Match err = new Match();
@@ -59,6 +71,17 @@ public class MatchController {
             matches.add(err);
         }
         return matches;
+    }
+    
+    // Helper to separate letters from scores (e.g. "India Under-19s 494/10" -> "India Under-19s")
+    private String extractTeamName(String raw) {
+        return raw.replaceAll("[0-9/&\\*]+$", "").trim();
+    }
+    
+    // Helper to extract just the score (e.g. "India Under-19s 494/10" -> "494/10")
+    private String extractScore(String raw) {
+        String name = extractTeamName(raw);
+        return raw.replace(name, "").trim();
     }
 
     @GetMapping("/live")
@@ -73,7 +96,7 @@ public class MatchController {
 
     @GetMapping("/upcoming")
     public List<Match> getUpcomingMatches() {
-        return scrapeRssMatches(); // The RSS has upcoming schedules too if live is empty
+        return scrapeRssMatches();
     }
 
     @GetMapping
