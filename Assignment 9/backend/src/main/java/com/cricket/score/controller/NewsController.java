@@ -12,9 +12,10 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class NewsController {
 
-    private Document fetchDocument(String url) throws Exception {
-        return Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+    private Document fetchRssFeed() throws Exception {
+        // BBC Sport Cricket RSS feed is highly reliable and does not block bots
+        return Jsoup.connect("https://feeds.bbci.co.uk/sport/cricket/rss.xml")
+                .userAgent("Mozilla/5.0")
                 .timeout(10000)
                 .get();
     }
@@ -23,19 +24,18 @@ public class NewsController {
     public List<Map<String, String>> getLatestNews() {
         List<Map<String, String>> newsList = new ArrayList<>();
         try {
-            Document doc = fetchDocument("https://www.cricbuzz.com/cricket-news");
-            // The DOM for news on Cricbuzz often uses these classes:
-            Elements items = doc.select(".cb-nws-hdln-anc");
+            Document doc = fetchRssFeed();
+            Elements items = doc.select("item");
             
             for (int i = 0; i < Math.min(6, items.size()); i++) {
                 Map<String, String> news = new HashMap<>();
-                news.put("title", items.get(i).text());
-                news.put("time", "Just now");
+                news.put("title", items.get(i).select("title").text());
+                // In XML, JSoup selects child tags easily
+                news.put("time", items.get(i).select("pubDate").text().replace("+0000", "").replace("GMT", "").trim());
                 newsList.add(news);
             }
-            if (newsList.isEmpty()) throw new Exception("No elements found");
         } catch (Exception e) {
-            newsList.add(Map.of("title", "Real Live Data Fetch Failed (Blocked by Provider)", "time", "Error"));
+            newsList.add(Map.of("title", "Real News RSS Feed Failed: " + e.getMessage(), "time", "Error"));
         }
         return newsList;
     }
@@ -44,21 +44,18 @@ public class NewsController {
     public Map<String, String> getFeaturedNews() {
         Map<String, String> news = new HashMap<>();
         try {
-            Document doc = fetchDocument("https://www.cricbuzz.com/cricket-news");
-            Element mainImage = doc.selectFirst("img[src*='cricbuzz']");
-            Element mainTitle = doc.selectFirst("h1, h2");
+            Document doc = fetchRssFeed();
+            Element firstItem = doc.selectFirst("item");
             
-            news.put("title", mainTitle != null ? mainTitle.text() : "Live Cricbuzz Update");
-            news.put("description", "Latest update fetched directly from live web source.");
-            
-            if (mainImage != null && mainImage.hasAttr("src")) {
-                news.put("imageUrl", mainImage.attr("src"));
-            } else {
-                news.put("imageUrl", "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3");
+            if (firstItem != null) {
+                news.put("title", firstItem.select("title").text());
+                news.put("description", firstItem.select("description").text());
             }
-            news.put("category", "CRICBUZZ LIVE");
+            // BBC RSS doesn't always have huge images, so we use a very dynamic HD cricket image from Unsplash
+            news.put("imageUrl", "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80");
+            news.put("category", "LATEST GLOBAL TRENDING");
         } catch (Exception e) {
-            news.put("title", "Connection Refused");
+            news.put("title", "Connection Refused to RSS");
             news.put("description", "Provider is blocking automated requests.");
             news.put("imageUrl", "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3");
             news.put("category", "ERROR");
@@ -68,9 +65,22 @@ public class NewsController {
 
     @GetMapping("/sidebar")
     public List<Map<String, String>> getSidebarNews() {
-        return Arrays.asList(
-            Map.of("title", "Live Updates from Cricbuzz", "description", "Fetching direct feed...", "imageUrl", "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3"),
-            Map.of("title", "Match Analysis", "description", "Fetching direct feed...", "imageUrl", "https://images.unsplash.com/photo-1624526267942-ab0f0b580615?ixlib=rb-4.0.3")
-        );
+        List<Map<String, String>> sidebarList = new ArrayList<>();
+        try {
+            Document doc = fetchRssFeed();
+            Elements items = doc.select("item");
+            
+            // Skip the first one since it's featured, grab 2nd and 3rd
+            for (int i = 1; i <= 2 && i < items.size(); i++) {
+                Map<String, String> news = new HashMap<>();
+                news.put("title", items.get(i).select("title").text());
+                news.put("description", items.get(i).select("description").text());
+                news.put("imageUrl", i == 1 ? "https://images.unsplash.com/photo-1624526267942-ab0f0b580615?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60" : "https://images.unsplash.com/photo-1589801258579-18e091f4ca26?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60");
+                sidebarList.add(news);
+            }
+        } catch (Exception e) {
+            sidebarList.add(Map.of("title", "Sidebar Error", "description", e.getMessage(), "imageUrl", ""));
+        }
+        return sidebarList;
     }
 }
