@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Clock, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Trophy, Clock, Calendar, History, Activity, MapPin } from 'lucide-react';
 import './App.css';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('LIVE');
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchMatches = async () => {
     try {
-      setLoading(true);
-      const res = await fetch('http://localhost:8080/api/matches');
+      const res = await fetch(`http://localhost:8080/api/matches/${activeTab.toLowerCase()}`);
       const data = await res.json();
       setMatches(data);
     } catch (error) {
@@ -29,58 +29,85 @@ function App() {
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchMatches();
-    const interval = setInterval(fetchMatches, 10000); // Polling every 10s for live updates
+    const interval = setInterval(fetchMatches, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeTab]);
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <div className="logo">
-          <Trophy className="logo-icon" size={32} />
-          <h1>CricLive Score Manager</h1>
+    <div className="cb-container">
+      {/* Navbar */}
+      <nav className="cb-navbar">
+        <div className="cb-nav-brand">
+          <Trophy size={24} color="#009270" />
+          <span>CricTracker</span>
         </div>
-        <div className="header-actions">
-          <button className="btn-refresh" onClick={fetchMatches}><RefreshCw size={18} /> Refresh</button>
-          <button className="btn-primary" onClick={simulateMatches}>Simulate Match</button>
+        <div className="cb-nav-links">
+          <button className={activeTab === 'LIVE' ? 'active' : ''} onClick={() => setActiveTab('LIVE')}>
+            <Activity size={16} /> Live Scores
+          </button>
+          <button className={activeTab === 'RECENT' ? 'active' : ''} onClick={() => setActiveTab('RECENT')}>
+            <History size={16} /> Recent
+          </button>
+          <button className={activeTab === 'UPCOMING' ? 'active' : ''} onClick={() => setActiveTab('UPCOMING')}>
+            <Calendar size={16} /> Upcoming
+          </button>
         </div>
-      </header>
+        <div className="cb-nav-actions">
+          <button className="cb-btn-seed" onClick={simulateMatches}>Load Test Data</button>
+        </div>
+      </nav>
 
-      <main className="dashboard">
+      {/* Main Content */}
+      <main className="cb-main">
+        <div className="cb-header-section">
+          <h2>{activeTab === 'LIVE' ? 'Live Cricket Scores' : activeTab === 'RECENT' ? 'Recent Cricket Matches' : 'Upcoming Cricket Matches'}</h2>
+        </div>
+
         {loading && matches.length === 0 ? (
-          <div className="loading">Loading live matches...</div>
+          <div className="cb-loading">Fetching matches...</div>
         ) : matches.length === 0 ? (
-          <div className="empty-state">No matches found. Click "Simulate Match" to start.</div>
+          <div className="cb-empty">No {activeTab.toLowerCase()} matches currently available. Click "Load Test Data" to seed the database.</div>
         ) : (
-          <div className="matches-grid">
+          <div className="cb-match-list">
             {matches.map(match => (
-              <div key={match.id} className="match-card">
-                <div className="match-card-header">
-                  <span className={`status-badge ${match.matchStatus.toLowerCase()}`}>
-                    {match.matchStatus === 'LIVE' ? <span className="live-dot"></span> : null}
+              <div key={match.id} className="cb-match-card">
+                <div className="cb-card-header">
+                  <div className="cb-series-info">
+                    <strong>{match.seriesName}</strong> • {match.matchType}
+                  </div>
+                  <div className={`cb-badge ${match.matchStatus.toLowerCase()}`}>
+                    {match.matchStatus === 'LIVE' && <span className="cb-live-dot"></span>}
                     {match.matchStatus}
-                  </span>
-                  <span className="match-venue">{match.venue}</span>
-                </div>
-                
-                <div className="match-teams">
-                  <div className="team">
-                    <h3>{match.team1}</h3>
-                  </div>
-                  <div className="vs">VS</div>
-                  <div className="team">
-                    <h3>{match.team2}</h3>
                   </div>
                 </div>
 
-                <div className="match-score">
-                  {match.score}
+                <div className="cb-teams-section">
+                  <div className="cb-team-row">
+                    <span className="cb-team-name">{match.team1}</span>
+                    <span className="cb-team-score">
+                      {match.team1Score && <strong>{match.team1Score}</strong>}
+                      {match.team1Overs && <span className="cb-overs">({match.team1Overs})</span>}
+                    </span>
+                  </div>
+                  <div className="cb-team-row">
+                    <span className="cb-team-name">{match.team2}</span>
+                    <span className="cb-team-score">
+                      {match.team2Score && <strong>{match.team2Score}</strong>}
+                      {match.team2Overs && <span className="cb-overs">({match.team2Overs})</span>}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="match-summary">
-                  {match.matchStatus === 'LIVE' ? <Clock size={16} /> : <CheckCircle2 size={16} />}
-                  <span>{match.summary}</span>
+                <div className="cb-card-footer">
+                  <div className="cb-summary">
+                    {match.summary}
+                  </div>
+                  {match.runRate && <div className="cb-runrate">{match.runRate}</div>}
+                  <div className="cb-venue">
+                    <MapPin size={12} /> {match.venue}
+                  </div>
                 </div>
               </div>
             ))}
