@@ -1,3 +1,5 @@
+/* Previous styles... */
+
 .cb-container {
   min-height: 100vh;
 }
@@ -100,6 +102,7 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   padding: 16px;
   transition: box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .cb-match-card:hover {
@@ -228,4 +231,122 @@
   padding: 40px;
   color: var(--cb-text-muted);
   font-size: 15px;
+}
+
+
+/* Modal Styles */
+.scorecard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  padding-top: 50px;
+  overflow-y: auto;
+}
+
+.scorecard-modal {
+  background-color: white;
+  width: 90%;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  margin-bottom: 50px;
+  overflow: hidden;
+}
+
+.scorecard-header {
+  background-color: var(--cb-primary);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scorecard-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scorecard-body {
+  padding: 20px;
+}
+
+.scorecard-section {
+  margin-bottom: 24px;
+}
+
+.scorecard-section h4 {
+  background-color: #f1f1f1;
+  padding: 8px 12px;
+  margin: 0 0 10px 0;
+  border-left: 4px solid var(--cb-primary);
+  font-weight: 500;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.score-table th, .score-table td {
+  padding: 10px 8px;
+  text-align: right;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.score-table th:first-child, .score-table td:first-child {
+  text-align: left;
+}
+.score-table th:nth-child(2), .score-table td:nth-child(2) {
+  text-align: left;
+  color: var(--cb-text-muted);
+}
+
+.score-table th {
+  color: var(--cb-text-muted);
+  font-weight: 500;
+}
+
+.player-name {
+  color: var(--cb-blue);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.player-runs {
+  font-weight: 700;
+}
+
+.player-wickets {
+  font-weight: 700;
+}
+
+.match-extras {
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.match-extras p {
+  margin: 5px 0;
 }

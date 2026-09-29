@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/matches")
-@CrossOrigin(origins = "*") // Allows React frontend to access
+@CrossOrigin(origins = "*")
 public class MatchController {
 
     @Autowired
@@ -37,89 +40,72 @@ public class MatchController {
         return matchRepository.findByMatchStatus("UPCOMING");
     }
 
-    @PostMapping
-    public Match createMatch(@RequestBody Match match) {
-        if(match.getStartTime() == null) {
-            match.setStartTime(LocalDateTime.now());
-        }
-        return matchRepository.save(match);
+    @GetMapping("/{id}/scorecard")
+    public ResponseEntity<Map<String, Object>> getMatchScorecard(@PathVariable Long id) {
+        // Massive mocked detailed scorecard for the requested match
+        Map<String, Object> scorecard = new HashMap<>();
+        
+        // India Batsmen
+        List<Map<String, String>> indBatsmen = Arrays.asList(
+            Map.of("name", "Rohit Sharma", "runs", "45", "balls", "28", "fours", "6", "sixes", "2", "sr", "160.71", "status", "c Smith b Starc"),
+            Map.of("name", "Virat Kohli", "runs", "82", "balls", "50", "fours", "8", "sixes", "3", "sr", "164.00", "status", "batting"),
+            Map.of("name", "Suryakumar Yadav", "runs", "15", "balls", "8", "fours", "2", "sixes", "1", "sr", "187.50", "status", "batting")
+        );
+        
+        // Australia Bowlers
+        List<Map<String, String>> ausBowlers = Arrays.asList(
+            Map.of("name", "Mitchell Starc", "overs", "4.0", "maidens", "0", "runs", "35", "wickets", "1", "econ", "8.75"),
+            Map.of("name", "Pat Cummins", "overs", "4.0", "maidens", "0", "runs", "42", "wickets", "0", "econ", "10.50"),
+            Map.of("name", "Adam Zampa", "overs", "3.0", "maidens", "0", "runs", "28", "wickets", "0", "econ", "9.33")
+        );
+
+        scorecard.put("battingTeam", "India");
+        scorecard.put("batsmen", indBatsmen);
+        scorecard.put("bowlingTeam", "Australia");
+        scorecard.put("bowlers", ausBowlers);
+        scorecard.put("currentPartnership", "45(22)");
+        scorecard.put("lastWicket", "Rohit Sharma 45(28)");
+        
+        return ResponseEntity.ok(scorecard);
     }
 
-    // Endpoint for simulating detailed Cricbuzz-like matches
     @PostMapping("/simulate")
     public String simulateMatches() {
-        matchRepository.deleteAll(); // clear old
-
-        // 1. LIVE MATCH
+        matchRepository.deleteAll(); // clear old schema data
+        
         Match m1 = new Match();
         m1.setSeriesName("India tour of Australia, 2026");
-        m1.setMatchType("Test");
-        m1.setTeam1("IND");
-        m1.setTeam2("AUS");
-        m1.setTeam1Score("345/6");
-        m1.setTeam1Overs("89.4");
-        m1.setTeam2Score("280");
-        m1.setTeam2Overs("75.0");
+        m1.setMatchType("T20I");
+        m1.setTeam1("India");
+        m1.setTeam2("Australia");
+        m1.setTeam1Score("155/2");
+        m1.setTeam1Overs("14.2");
+        m1.setTeam2Score("0/0");
+        m1.setTeam2Overs("0.0");
         m1.setMatchStatus("LIVE");
         m1.setVenue("MCG, Melbourne");
-        m1.setSummary("Day 3: 3rd Session - India lead by 65 runs.");
-        m1.setToss("India won the toss and elected to bat");
-        m1.setRunRate("CRR: 3.86");
+        m1.setSummary("India elected to bat");
+        m1.setToss("India won the toss");
+        m1.setRunRate("CRR: 10.91");
         m1.setStartTime(LocalDateTime.now());
         
-        // 2. LIVE MATCH T20
         Match m2 = new Match();
         m2.setSeriesName("T20 World Cup 2026");
         m2.setMatchType("T20I");
-        m2.setTeam1("ENG");
-        m2.setTeam2("SA");
+        m2.setTeam1("England");
+        m2.setTeam2("South Africa");
         m2.setTeam1Score("185/5");
         m2.setTeam1Overs("20.0");
         m2.setTeam2Score("140/3");
         m2.setTeam2Overs("15.2");
         m2.setMatchStatus("LIVE");
         m2.setVenue("Wanderers, Johannesburg");
-        m2.setSummary("South Africa need 46 runs in 28 balls.");
-        m2.setToss("South Africa won the toss and elected to bowl");
+        m2.setSummary("South Africa need 46 runs in 28 balls");
+        m2.setToss("South Africa won the toss");
         m2.setRunRate("CRR: 9.13 | REQ: 9.85");
         m2.setStartTime(LocalDateTime.now());
 
-        // 3. RECENT MATCH
-        Match m3 = new Match();
-        m3.setSeriesName("Asia Cup 2026");
-        m3.setMatchType("ODI");
-        m3.setTeam1("PAK");
-        m3.setTeam2("SL");
-        m3.setTeam1Score("290/8");
-        m3.setTeam1Overs("50.0");
-        m3.setTeam2Score("291/4");
-        m3.setTeam2Overs("48.3");
-        m3.setMatchStatus("RECENT");
-        m3.setVenue("Dubai International Stadium");
-        m3.setSummary("Sri Lanka won by 6 wickets");
-        m3.setToss("Pakistan won the toss and elected to bat");
-        m3.setRunRate("CRR: 6.00");
-        m3.setStartTime(LocalDateTime.now().minusDays(1));
-
-        // 4. UPCOMING MATCH
-        Match m4 = new Match();
-        m4.setSeriesName("IPL 2026");
-        m4.setMatchType("T20");
-        m4.setTeam1("CSK");
-        m4.setTeam2("MI");
-        m4.setTeam1Score("");
-        m4.setTeam1Overs("");
-        m4.setTeam2Score("");
-        m4.setTeam2Overs("");
-        m4.setMatchStatus("UPCOMING");
-        m4.setVenue("Wankhede Stadium, Mumbai");
-        m4.setSummary("Match starts at 07:30 PM IST");
-        m4.setToss("Toss yet to happen");
-        m4.setRunRate("");
-        m4.setStartTime(LocalDateTime.now().plusHours(5));
-
-        matchRepository.saveAll(List.of(m1, m2, m3, m4));
-
-        return "Simulated Cricbuzz matches added!";
+        matchRepository.saveAll(List.of(m1, m2));
+        return "Detailed matches simulated!";
     }
 }
