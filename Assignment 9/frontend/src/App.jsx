@@ -1,44 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, X } from 'lucide-react';
+import { Search, User, X, ChevronRight } from 'lucide-react';
 import './App.css';
 
 function App() {
-  const [activeCategory, setActiveCategory] = useState('LIVE'); // LIVE, UPCOMING, RECENT
+  const [activeCategory, setActiveCategory] = useState('LIVE'); 
   const [mainMatches, setMainMatches] = useState([]);
-  const [quickLinks, setQuickLinks] = useState([]); // For the dark grey secondary navbar
+  const [quickLinks, setQuickLinks] = useState([]);
   
   const [latestNews, setLatestNews] = useState([]);
   const [featuredNews, setFeaturedNews] = useState(null);
   const [sidebarNews, setSidebarNews] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Offset pagination
+  const [offset, setOffset] = useState(0);
+
   // Scorecard modal state
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [scorecard, setScorecard] = useState(null);
   const [loadingScorecard, setLoadingScorecard] = useState(false);
 
-  const fetchMainData = async () => {
+  const fetchMainData = async (resetOffset = false) => {
     try {
-      setLoading(true);
+      if(resetOffset) setLoading(true);
       
-      // Fetch main carousel matches based on category
-      const matchesRes = await fetch(`http://localhost:8080/api/matches/${activeCategory.toLowerCase()}`);
-      setMainMatches(await matchesRes.json());
+      const currentOffset = resetOffset ? 0 : offset;
       
-      // Always fetch all matches for the secondary navbar quick links
-      const allMatchesRes = await fetch('http://localhost:8080/api/matches');
-      setQuickLinks(await allMatchesRes.json());
+      // Fetch main carousel matches based on category & offset
+      const matchesRes = await fetch(`http://localhost:8080/api/matches/${activeCategory.toLowerCase()}?offset=${currentOffset}`);
+      const newMatches = await matchesRes.json();
+      
+      if (resetOffset) {
+         setMainMatches(newMatches);
+      } else {
+         setMainMatches(prev => [...prev, ...newMatches]);
+      }
+      
+      if(resetOffset) {
+        const allMatchesRes = await fetch('http://localhost:8080/api/matches?offset=0');
+        setQuickLinks(await allMatchesRes.json());
 
-      // Fetch news
-      const [latestRes, featuredRes, sidebarRes] = await Promise.all([
-        fetch('http://localhost:8080/api/news/latest'),
-        fetch('http://localhost:8080/api/news/featured'),
-        fetch('http://localhost:8080/api/news/sidebar')
-      ]);
+        const [latestRes, featuredRes, sidebarRes] = await Promise.all([
+          fetch('http://localhost:8080/api/news/latest'),
+          fetch('http://localhost:8080/api/news/featured'),
+          fetch('http://localhost:8080/api/news/sidebar')
+        ]);
 
-      setLatestNews(await latestRes.json());
-      setFeaturedNews(await featuredRes.json());
-      setSidebarNews(await sidebarRes.json());
+        setLatestNews(await latestRes.json());
+        setFeaturedNews(await featuredRes.json());
+        setSidebarNews(await sidebarRes.json());
+      }
     } catch (error) {
       console.error("Error fetching data", error);
     } finally {
@@ -46,21 +57,17 @@ function App() {
     }
   };
 
-  const simulateMatches = async () => {
-    try {
-      await fetch('http://localhost:8080/api/matches/simulate', { method: 'POST' });
-      fetchMainData();
-    } catch (error) {
-      console.error("Error simulating matches", error);
-    }
+  const loadMoreMatches = () => {
+    setOffset(prev => prev + 25);
   };
 
   const viewScorecard = async (match) => {
+    if(!match.matchId) return; // Need CricAPI UUID
     setSelectedMatch(match);
     setLoadingScorecard(true);
     setScorecard(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/matches/${match.id}/scorecard`);
+      const res = await fetch(`http://localhost:8080/api/matches/${match.matchId}/scorecard`);
       const data = await res.json();
       setScorecard(data);
     } catch (error) {
@@ -71,8 +78,13 @@ function App() {
   };
 
   useEffect(() => {
-    fetchMainData();
-    const interval = setInterval(fetchMainData, 10000);
+    fetchMainData(false);
+  }, [offset]);
+
+  useEffect(() => {
+    setOffset(0);
+    fetchMainData(true);
+    const interval = setInterval(() => fetchMainData(true), 15000); // Polling real API every 15s
     return () => clearInterval(interval);
   }, [activeCategory]);
 
@@ -82,7 +94,7 @@ function App() {
       <nav className="cb-global-nav">
         <div className="cb-nav-container">
           <div className="cb-nav-left">
-            <div className="cb-logo" onClick={simulateMatches} title="Click to load mock data!">
+            <div className="cb-logo">
               cric<span>buzz</span>
             </div>
             <ul className="cb-nav-list">
@@ -112,7 +124,7 @@ function App() {
           <ul className="cb-matches-quick-links">
             {quickLinks.slice(0, 5).map(match => (
               <li key={match.id} onClick={() => viewScorecard(match)}>
-                {match.team1} vs {match.team2} - {match.matchStatus === 'LIVE' ? 'LIVE' : (match.summary || match.matchStatus)}
+                {match.team1} vs {match.team2} - {match.matchStatus}
               </li>
             ))}
           </ul>
@@ -122,36 +134,45 @@ function App() {
 
       <div className="cb-main-content">
         
-        {/* Dynamic Category Header */}
-        <h2 style={{ fontSize: '20px', marginBottom: '15px', color: '#222' }}>
-          {activeCategory === 'LIVE' ? 'Live Matches' : activeCategory === 'UPCOMING' ? 'Upcoming Schedule' : 'Archived Recent Matches'}
+        <h2 style={{ fontSize: '20px', marginBottom: '15px', color: '#222', display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+          <span>{activeCategory === 'LIVE' ? 'Live Matches' : activeCategory === 'UPCOMING' ? 'Upcoming Schedule' : 'Archived Recent Matches'}</span>
+          <button onClick={loadMoreMatches} style={{background:'#009270', color:'white', border:'none', padding:'6px 12px', borderRadius:'4px', cursor:'pointer', fontSize:'14px', fontWeight:'600'}}>
+            Load More Matches (Offset {offset + 25})
+          </button>
         </h2>
 
-        {/* Horizontal Match Carousel */}
         {loading && mainMatches.length === 0 ? (
-          <div style={{ padding: '20px', color: '#666' }}>Fetching {activeCategory.toLowerCase()} data from API...</div>
+          <div style={{ padding: '20px', color: '#666' }}>Fetching {activeCategory.toLowerCase()} data from CricAPI...</div>
         ) : mainMatches.length === 0 ? (
           <div style={{ padding: '20px', color: '#666', background: 'white', borderRadius: '4px' }}>
-            No {activeCategory.toLowerCase()} matches found. Click the Cricbuzz logo to load test data!
+            No {activeCategory.toLowerCase()} matches currently found.
           </div>
         ) : (
           <div className="cb-carousel-container">
             {mainMatches.map(match => (
               <div className="cb-carousel-card" key={match.id} onClick={() => viewScorecard(match)}>
                 <div className="cb-card-header">
-                  <span className="cb-card-title">{match.seriesName} • {match.matchType}</span>
-                  <span className="cb-card-badge">{match.matchType === 'T20I' || match.matchType === 'T20' ? 'T20' : 'FC'}</span>
+                  <span className="cb-card-title">{match.seriesName}</span>
+                  <span className="cb-card-badge">{match.matchType}</span>
                 </div>
                 <div className="cb-card-teams">
                   <div className="cb-team">
-                    <span className="cb-flag">🏏</span>
+                    {match.team1Logo ? (
+                        <img src={match.team1Logo} alt={match.team1} className="cb-flag" style={{width:'24px', height:'18px', objectFit:'cover'}}/>
+                    ) : (
+                        <span className="cb-flag" style={{fontSize:'18px'}}>🏏</span>
+                    )}
                     <span className="cb-team-name">{match.team1}</span>
-                    <span className="cb-score">{match.team1Score} <span className="cb-overs">{match.team1Overs && `(${match.team1Overs})`}</span></span>
+                    <span className="cb-score">{match.team1Score}</span>
                   </div>
                   <div className="cb-team">
-                    <span className="cb-flag">🏏</span>
+                    {match.team2Logo ? (
+                        <img src={match.team2Logo} alt={match.team2} className="cb-flag" style={{width:'24px', height:'18px', objectFit:'cover'}}/>
+                    ) : (
+                        <span className="cb-flag" style={{fontSize:'18px'}}>🏏</span>
+                    )}
                     <span className="cb-team-name">{match.team2}</span>
-                    <span className="cb-score">{match.team2Score} <span className="cb-overs">{match.team2Overs && `(${match.team2Overs})`}</span></span>
+                    <span className="cb-score">{match.team2Score}</span>
                   </div>
                 </div>
                 <div className="cb-card-status">
@@ -165,7 +186,6 @@ function App() {
           </div>
         )}
 
-        {/* Quick Access Bar */}
         <div className="cb-quick-access">
           <strong>Quick Access</strong>
           <button>👥 India - Men</button>
@@ -173,10 +193,7 @@ function App() {
           <button>🛡️ Go ad-free</button>
         </div>
 
-        {/* Main Grid: News & Featured */}
         <div className="cb-news-grid">
-          
-          {/* Left Column: Latest News */}
           <div className="cb-col-left">
             <h3 className="cb-section-title">LATEST NEWS</h3>
             <div className="cb-latest-news-list">
@@ -190,7 +207,6 @@ function App() {
             </div>
           </div>
 
-          {/* Middle Column: Featured Story */}
           <div className="cb-col-middle">
             {featuredNews ? (
               <div className="cb-featured-story">
@@ -204,7 +220,6 @@ function App() {
             )}
           </div>
 
-          {/* Right Column: Sidebar News/Videos */}
           <div className="cb-col-right">
             <h3 className="cb-section-title">FEATURED ARTICLES</h3>
             <div className="cb-sidebar-list">
@@ -220,26 +235,26 @@ function App() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
 
-      {/* Scorecard Modal */}
       {selectedMatch && (
         <div className="scorecard-overlay" onClick={() => setSelectedMatch(null)}>
           <div className="scorecard-modal" onClick={e => e.stopPropagation()}>
             <div className="scorecard-header">
-              <h3>{selectedMatch.team1} vs {selectedMatch.team2} - Full Scorecard</h3>
+              <h3>{selectedMatch.team1} vs {selectedMatch.team2} - Detailed Scorecard</h3>
               <button className="close-btn" onClick={() => setSelectedMatch(null)}><X size={24} /></button>
             </div>
             
             <div className="scorecard-body">
               {loadingScorecard ? (
-                <div className="cb-loading" style={{padding:'40px', textAlign:'center', color:'#666'}}>Loading live scorecard data from API...</div>
+                <div className="cb-loading" style={{padding:'40px', textAlign:'center', color:'#666'}}>
+                    Loading DETAILED live scorecard data from API...
+                </div>
               ) : scorecard && scorecard.batsmen ? (
                 <>
                   <div className="scorecard-section">
-                    <h4>{scorecard.battingTeam} Batting</h4>
+                    <h4>{scorecard.battingTeam}</h4>
                     <table className="score-table">
                       <thead>
                         <tr>
@@ -269,7 +284,7 @@ function App() {
                   </div>
 
                   <div className="scorecard-section">
-                    <h4>{scorecard.bowlingTeam} Bowling</h4>
+                    <h4>{scorecard.bowlingTeam}</h4>
                     <table className="score-table">
                       <thead>
                         <tr>
@@ -297,7 +312,7 @@ function App() {
                   </div>
                 </>
               ) : (
-                <div className="cb-empty" style={{padding:'40px', textAlign:'center', color:'#666'}}>Detailed scorecard not available for this match.</div>
+                <div className="cb-empty" style={{padding:'40px', textAlign:'center', color:'#666'}}>Scorecard data not available for this match.</div>
               )}
             </div>
           </div>
