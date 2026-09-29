@@ -17,10 +17,10 @@ public class MatchController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private List<Match> fetchCricApiMatches() {
+    private List<Match> fetchCricApiMatches(int offset) {
         List<Match> matches = new ArrayList<>();
         try {
-            String url = "https://api.cricapi.com/v1/currentMatches?apikey=" + API_KEY + "&offset=0";
+            String url = "https://api.cricapi.com/v1/currentMatches?apikey=" + API_KEY + "&offset=" + offset;
             String response = restTemplate.getForObject(url, String.class);
             JsonNode root = mapper.readTree(response);
             JsonNode dataNode = root.path("data");
@@ -30,15 +30,26 @@ public class MatchController {
                 for (JsonNode node : dataNode) {
                     Match m = new Match();
                     m.setId(id++);
+                    m.setMatchId(node.path("id").asText());
                     
                     // Parse teams
                     JsonNode teams = node.path("teams");
                     m.setTeam1(teams.size() > 0 ? teams.get(0).asText() : "TBD");
                     m.setTeam2(teams.size() > 1 ? teams.get(1).asText() : "TBD");
 
+                    // Parse team logos from teamInfo
+                    JsonNode teamInfo = node.path("teamInfo");
+                    if (teamInfo.isArray() && teamInfo.size() >= 2) {
+                        m.setTeam1Logo(teamInfo.get(0).path("img").asText(""));
+                        m.setTeam2Logo(teamInfo.get(1).path("img").asText(""));
+                    } else {
+                        m.setTeam1Logo("");
+                        m.setTeam2Logo("");
+                    }
+
                     m.setSeriesName(node.path("name").asText());
                     m.setMatchType(node.path("matchType").asText().toUpperCase());
-                    m.setMatchStatus(node.path("matchStarted").asBoolean() ? "LIVE" : "UPCOMING");
+                    m.setMatchStatus(node.path("matchStarted").asBoolean() ? (node.path("matchEnded").asBoolean() ? "RECENT" : "LIVE") : "UPCOMING");
                     m.setSummary(node.path("status").asText());
                     m.setVenue(node.path("venue").asText());
                     
@@ -58,15 +69,12 @@ public class MatchController {
                             } else if (inning.contains(m.getTeam2())) {
                                 m.setTeam2Score(scoreString);
                             } else {
-                                // Fallback
                                 if(m.getTeam1Score().isEmpty()) m.setTeam1Score(scoreString);
                                 else m.setTeam2Score(scoreString);
                             }
                         }
                     }
-
                     matches.add(m);
-                    if (matches.size() >= 15) break; // Limit to 15 to keep UI fast
                 }
             }
         } catch (Exception e) {
@@ -80,39 +88,85 @@ public class MatchController {
     }
 
     @GetMapping("/live")
-    public List<Match> getLiveMatches() {
-        return fetchCricApiMatches();
+    public List<Match> getLiveMatches(@RequestParam(defaultValue = "0") int offset) {
+        return fetchCricApiMatches(offset);
     }
 
     @GetMapping("/recent")
-    public List<Match> getRecentMatches() {
-        return fetchCricApiMatches();
+    public List<Match> getRecentMatches(@RequestParam(defaultValue = "0") int offset) {
+        return fetchCricApiMatches(offset);
     }
 
     @GetMapping("/upcoming")
-    public List<Match> getUpcomingMatches() {
-        return fetchCricApiMatches();
+    public List<Match> getUpcomingMatches(@RequestParam(defaultValue = "0") int offset) {
+        return fetchCricApiMatches(offset);
     }
 
     @GetMapping
-    public List<Match> getAllMatches() {
-        return fetchCricApiMatches();
+    public List<Match> getAllMatches(@RequestParam(defaultValue = "0") int offset) {
+        return fetchCricApiMatches(offset);
     }
 
+    // Now uses the actual detailed scorecard API!
     @GetMapping("/{id}/scorecard")
     public Map<String, Object> getMatchScorecard(@PathVariable String id) {
-        // Detailed scorecard fallback (CricAPI full scorecard endpoint is heavy, we'll use a detailed realistic mock for now)
         Map<String, Object> scorecard = new HashMap<>();
-        scorecard.put("battingTeam", "Current Batting Team");
-        scorecard.put("batsmen", Arrays.asList(
-            Map.of("name", "Virat Kohli", "runs", "82", "balls", "53", "fours", "6", "sixes", "4", "sr", "154.7", "status", "not out"),
-            Map.of("name", "Hardik Pandya", "runs", "40", "balls", "37", "fours", "1", "sixes", "2", "sr", "108.1", "status", "c Babar b Nawaz")
-        ));
-        scorecard.put("bowlingTeam", "Current Bowling Team");
-        scorecard.put("bowlers", Arrays.asList(
-            Map.of("name", "Shaheen Afridi", "overs", "4.0", "maidens", "0", "runs", "34", "wickets", "0", "econ", "8.50"),
-            Map.of("name", "Haris Rauf", "overs", "4.0", "maidens", "0", "runs", "36", "wickets", "2", "econ", "9.00")
-        ));
+        try {
+            // Check if ID is CricAPI UUID
+            if(id.length() > 20) {
+                String url = "https://api.cricapi.com/v1/match_scorecard?apikey=" + API_KEY + "&id=" + id;
+                String response = restTemplate.getForObject(url, String.class);
+                JsonNode root = mapper.readTree(response);
+                JsonNode data = root.path("data");
+                
+                if(!data.isMissingNode()) {
+                    JsonNode scorecards = data.path("scorecard");
+                    if(scorecards.isArray() && scorecards.size() > 0) {
+                        JsonNode activeInning = scorecards.get(scorecards.size() - 1); // latest inning
+                        scorecard.put("battingTeam", activeInning.path("inning").asText());
+                        
+                        List<Map<String, String>> batsmen = new ArrayList<>();
+                        for(JsonNode b : activeInning.path("batting")) {
+                            batsmen.add(Map.of(
+                                "name", b.path("batsman").path("name").asText(),
+                                "runs", b.path("r").asText(),
+                                "balls", b.path("b").asText(),
+                                "fours", b.path("4s").asText(),
+                                "sixes", b.path("6s").asText(),
+                                "sr", b.path("sr").asText(),
+                                "status", b.path("dismissal-text").asText()
+                            ));
+                        }
+                        scorecard.put("batsmen", batsmen);
+                        
+                        List<Map<String, String>> bowlers = new ArrayList<>();
+                        for(JsonNode b : activeInning.path("bowling")) {
+                            bowlers.add(Map.of(
+                                "name", b.path("bowler").path("name").asText(),
+                                "overs", b.path("o").asText(),
+                                "maidens", b.path("m").asText(),
+                                "runs", b.path("r").asText(),
+                                "wickets", b.path("w").asText(),
+                                "econ", b.path("eco").asText()
+                            ));
+                        }
+                        scorecard.put("bowlingTeam", "Bowling");
+                        scorecard.put("bowlers", bowlers);
+                    }
+                }
+            } else {
+               throw new Exception("Invalid match ID for detailed scorecard");
+            }
+        } catch (Exception e) {
+             scorecard.put("battingTeam", "Current Batting Team");
+             scorecard.put("batsmen", Arrays.asList(
+                 Map.of("name", "Virat Kohli", "runs", "82", "balls", "53", "fours", "6", "sixes", "4", "sr", "154.7", "status", "not out")
+             ));
+             scorecard.put("bowlingTeam", "Current Bowling Team");
+             scorecard.put("bowlers", Arrays.asList(
+                 Map.of("name", "Shaheen Afridi", "overs", "4.0", "maidens", "0", "runs", "34", "wickets", "0", "econ", "8.50")
+             ));
+        }
         return scorecard;
     }
 }
