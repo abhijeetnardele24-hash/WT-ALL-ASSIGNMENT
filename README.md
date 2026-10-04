@@ -20,6 +20,9 @@ Each assignment explores different modern web development frameworks and technol
 | **[Assignment 4](./Assignment%204)** | VIT Student Result Portal (Frontend) | `React.js`, `Tailwind CSS`, `JavaScript` |
 | **[Assignment 5](./Assignment%205)** | VIT Student Result Portal (Fullstack) | `Spring Boot (Java)`, `JavaScript`, `MySQL / MongoDB` |
 | **[Assignment 6](./Assignment%206)** | Online Book Store | `Node.js`, `Express.js`, `MongoDB`, `EJS` |
+| **[Assignment 7](./assignment-7)** | Online Book Store (Spring Boot & React) | `Spring Boot (Java)`, `React.js`, `MySQL` |
+| **[Assignment 8](./assignment%20-8)** | Interactive UML Class Diagram Generator | `React.js`, `@xyflow/react`, `JavaScript` |
+| **[Assignment 9](./Assignment%209)** | Real-Time Cricket Score Dashboard | `Spring Boot (Java)`, `React.js`, `CricAPI` |
 
 ---
 
@@ -51,17 +54,26 @@ Each assignment explores different modern web development frameworks and technol
 ### [Assignment 6: Online Book Store (Node.js & MongoDB)](./Assignment%206)
 **Description:** A complete, responsive website for an online bookstore using **Node.js**, **Express**, and **MongoDB**. The application includes four main pages: Home Page, Login Page, Registration Page (with secure authentication), and a Catalogue Page with search and filtering capabilities.
 
+### [Assignment 7: Online Book Store (Spring Boot & React)](./assignment-7)
+**Description:** A full-stack responsive website for an online bookstore using **Spring Boot** (backend APIs) and **React.js** (frontend). The application includes four main pages: Home Page, Login Page, Registration Page (with secure authentication), and a Catalogue Page with search and filtering capabilities.
+
+### [Assignment 8: Interactive UML Class Diagram Generator](./assignment%20-8)
+**Description:** An Interactive UML Class Diagram Generator built using **React** and @xyflow/react. It allows users to dynamically create, manage, and visually represent UML classes and their relationships with an interactive drag-and-drop canvas, and automatically generates Java source code.
+
+### [Assignment 9: Scalable Real-Time Cricket Score Management System](./Assignment%209)
+**Description:** A scalable and real-time cricket score management system using **Spring Boot** and **React**. Fetches, processes, and displays live cricket match information through REST APIs and a responsive frontend dashboard. Includes official CricAPI integration for 100% exact Cricbuzz-like detailed JSON live match data, complete with team flags and scorecards.
+
 ---
 
 ## Getting Started
 
-To run any of the assignments locally, navigate to the specific assignment folder and follow the instructions provided in its respective `README.md` (or simply run the appropriate server). 
+To run any of the assignments locally, navigate to the specific assignment folder and follow the instructions provided in its respective README.md (or simply run the appropriate server). 
 
 ### Prerequisites
 - **PHP/Apache Server** (e.g., XAMPP/WAMP) for Assignment 1.
-- **Node.js & npm** for React projects (Assignments 2 & 4).
+- **Node.js & npm** for React projects (Assignments 2, 4, 7, 8 & 9).
 - **Java JDK 17+ & Tomcat Server** for Assignment 3.
-- **Java JDK & Maven** for Spring Boot (Assignment 5).
+- **Java JDK & Maven/Gradle** for Spring Boot (Assignments 5, 7, & 9).
 - **Node.js & MongoDB** for the Online Book Store (Assignment 6).
 
 ---
